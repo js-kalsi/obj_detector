@@ -61,15 +61,15 @@ def setup():
     Setup configuration for predictor object.
     :return cfg: configuration object.
     """
-    cfg = get_cfg()
-    cfg.merge_from_file(model_zoo.get_config_file(settings.MODEL))
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
-    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(settings.MODEL)
-    cfg.MODEL.DEVICE = 'cpu'
-    return cfg
+    conf = get_cfg()
+    conf.merge_from_file(model_zoo.get_config_file(settings.MODEL))
+    conf.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
+    conf.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(settings.MODEL)
+    conf.MODEL.DEVICE = 'cpu'
+    return conf
 
 
 if __name__ == '__main__':
-    configuration = setup()
-    predictor = DefaultPredictor(configuration)
+    cfg = setup()
+    predictor = DefaultPredictor(cfg)
     app.run(host=settings.HOSTNAME, port=settings.PORT, debug=True)
