@@ -58,21 +58,19 @@ def get_img_url(img_id):
     return send_from_directory('images', f'{img_id}.jpeg')
 
 
-def setup():
+def setup(cfg):
     """
     Setup configuration for predictor object.
     :return cfg: configuration object.
     """
-
     cfg.merge_from_file(model_zoo.get_config_file(settings.MODEL))
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(settings.MODEL)
     cfg.MODEL.DEVICE = 'cpu'
-    return cfg
 
 
 if __name__ == '__main__':
     cfg = get_cfg()
-    setup()
+    setup(cfg)
     predictor = DefaultPredictor(cfg)
     app.run(host=settings.HOSTNAME, port=settings.PORT, debug=True)
