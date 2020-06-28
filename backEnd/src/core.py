@@ -11,12 +11,14 @@ from detectron2.engine import DefaultPredictor
 from detectron2.utils.logger import setup_logger
 from detectron2.utils.visualizer import Visualizer
 from flask import Flask, jsonify, send_from_directory, request
+from flask_cors import CORS
 
 from config import settings
 
 setup_logger()
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/', methods=['GET'])
@@ -56,20 +58,19 @@ def get_img_url(img_id):
     return send_from_directory('images', f'{img_id}.jpeg')
 
 
-def setup():
+def setup(cfg):
     """
     Setup configuration for predictor object.
     :return cfg: configuration object.
     """
-    conf = get_cfg()
-    conf.merge_from_file(model_zoo.get_config_file(settings.MODEL))
-    conf.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
-    conf.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(settings.MODEL)
-    conf.MODEL.DEVICE = 'cpu'
-    return conf
+    cfg.merge_from_file(model_zoo.get_config_file(settings.MODEL))
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
+    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(settings.MODEL)
+    cfg.MODEL.DEVICE = 'cpu'
 
 
 if __name__ == '__main__':
-    cfg = setup()
+    cfg = get_cfg()
+    setup(cfg)
     predictor = DefaultPredictor(cfg)
     app.run(host=settings.HOSTNAME, port=settings.PORT, debug=True)
